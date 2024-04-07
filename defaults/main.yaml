@@ -1,0 +1,3 @@
+data_dir: /data
+nfs_clients:
+  - localhost

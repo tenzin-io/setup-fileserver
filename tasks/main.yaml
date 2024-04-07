@@ -1,0 +1,22 @@
+---
+- name: Update cache and install packages
+  apt:
+    package: '{{ item }}' 
+    update_cache: true
+  loop:
+    - nfs-common
+    - nfs-kernel-server
+
+- name: Make the data folder
+  file:
+    path: '{{ data_dir }}'
+    state: directory
+
+- name: Ensure NFS exports are configured
+  ansible.builtin.lineinfile:
+    path: /etc/exports
+    line: "{{ data_dir }} {{ item }}(rw,sync,no_root_squash,no_subtree_check)"
+    insertafter: EOF
+  loop: '{{ nfs_clients }}'
+  notify:
+    - restart nfs-server
